@@ -1,5 +1,7 @@
 import google.generativeai as genai
-from google.generativeai.types import HarmCategory, HarmBlockThreshold
+import google.generativeai.types as gai_types
+
+# This will list all available submodules and classes within the
 
 from src.config import Config
 

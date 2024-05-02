@@ -6,6 +6,8 @@ from jinja2 import Environment, BaseLoader
 from src.llm import LLM
 from src.services.utils import retry_wrapper, validate_responses
 from src.browser.search import BingSearch
+from typing import Union, Dict,List
+
 
 PROMPT = open("src/agents/researcher/prompt.jinja2").read().strip()
 
@@ -24,18 +26,17 @@ class Researcher:
         )
 
     @validate_responses
-    def validate_response(self, response: str) -> dict | bool:
-
+    def validate_response(self, response: str) -> Union[Dict, bool]:
         if "queries" not in response and "ask_user" not in response:
             return False
         else:
             return {
-                "queries": response["queries"],
-                "ask_user": response["ask_user"]
+                "queries": response.get("queries", None),  # Added safety with .get()
+                "ask_user": response.get("ask_user", None)  # Added safety with .get()
             }
         
     @retry_wrapper
-    def execute(self, step_by_step_plan: str, contextual_keywords: List[str], project_name: str) -> dict | bool:
+    def execute(self, step_by_step_plan: str, contextual_keywords: List[str], project_name: str) -> Union[dict, bool]:
         contextual_keywords_str = ", ".join(map(lambda k: k.capitalize(), contextual_keywords))
         prompt = self.render(step_by_step_plan, contextual_keywords_str)
         
